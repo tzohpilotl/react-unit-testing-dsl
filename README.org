@@ -1,4 +1,4 @@
-* TODO [5/9]
+* TODO Tasks [5/9]
 + [X] Add eslint config
 + [X] Make describe blocks declarative
 + [X] Write tests for the ~describe~ function
