@@ -1,0 +1,10 @@
+* TODO [5/9]
++ [X] Add eslint config
++ [X] Make describe blocks declarative
++ [X] Write tests for the ~describe~ function
++ [X] Remove the need to call ~await~ inside ~description~ blocks
++ [X] Pass the whole ~userEvent~ API to the user
++ [ ] Allow more complex behavior in ~when~ function
++ [ ] Write tests for suite steps functions
++ [ ] Integrate into Jest
++ [ ] Integrate with React Testing Library assertions
