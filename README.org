@@ -1,3 +1,19 @@
+* Example
+#+BEGIN_SRC javascript
+  describe(({ name } => <p>{`Hello ${name}!`}</p>), function ({ given, when, then }) {
+    given("empty props", () => ({ name: "Mario" }));
+    when("the user clicks it once", ({ click }) => {
+      // These are the events in the `userEvent` package
+      return [click];
+    });
+    then("displays a text", ({ findByText }) => [
+      // These are the queries found in React Testing Library
+      async () => await findByText("Hello Mario!"),
+    ]);
+  });
+#+END_SRC
+
+
 * TODO Tasks [5/9]
 + [X] Add eslint config
 + [X] Make describe blocks declarative
