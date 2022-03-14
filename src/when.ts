@@ -15,7 +15,7 @@ export function when(state: TestState) {
 }
 
 export async function whenExecute(state: TestState) {
-  const steps = state.when.getAlgorithm({ click: userEvent.click });
+  const steps = state.when.getAlgorithm(userEvent);
   await Promise.all(steps.map((step) => step(state.value)));
 }
 

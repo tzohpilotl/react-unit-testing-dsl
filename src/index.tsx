@@ -1,12 +1,11 @@
+import userEvent from "@testing-library/user-event";
 import { given, givenExecute } from "./given";
 import { when, whenExecute } from "./when";
 import { then, thenExecute } from "./then";
 
 export type ComponentAssertions = any;
 
-export interface ComponentDriverActions {
-  click: (element: Element) => void;
-}
+export type ComponentDriverActions = typeof userEvent;
 
 interface TestSuite {
   given: (description: string, props: any) => void;

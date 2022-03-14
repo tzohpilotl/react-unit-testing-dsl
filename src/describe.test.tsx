@@ -6,6 +6,16 @@ function DummyComponent() {
   return <p>Testing component</p>;
 }
 
+async function testTextIsPresent(Component: React.FunctionComponent, text: string) {
+  await myDescribe(Component, function ({ given, when, then }) {
+    given("empty props", () => ({}));
+    when("just renders", () => []);
+    then("displays a text", ({ findByText }) => [
+      async () => await findByText(text),
+    ]);
+  });
+}
+
 async function testSuiteOrder(order: SuiteStep[]) {
   let previous: null | SuiteStep = null;
   await myDescribe(DummyComponent, ({ given, when, then }) => {
@@ -68,12 +78,14 @@ describe("describe", function () {
   });
 
   it("executes correctly when the unit lives up to the expectations", async function () {
-    await myDescribe(DummyComponent, function ({ given, when, then }) {
-      given("empty props", () => ({}));
-      when("just renders", () => []);
-      then("displays a text", ({ findByText }) => [
-        async () => await findByText("Testing component"),
-      ]);
-    });
+    await expect(
+      testTextIsPresent(DummyComponent, "Testing component")
+    ).resolves.not.toThrow();
+  });
+
+  it("throws if the unit doesn't live up to the expectations", async function () {
+    await expect(
+      testTextIsPresent(DummyComponent, "Having a coke with you")
+    ).rejects.toThrow();
   });
 });
