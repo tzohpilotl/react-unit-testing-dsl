@@ -15,9 +15,21 @@ export type Expectation =
 
 export type ExpectationsFn = (assertions: ComponentAssertions) => Expectation[];
 
-export type StrategyFn = (actions: ComponentDriverActions) => any[] | [];
+export type Query =
+  | ((r: RenderResult) => HTMLElement)
+  | ((r: RenderResult) => Promise<HTMLElement>);
 
-export type PropsFn = () => PropsWithChildren<{}>;
+export type Action =
+  | ((e: HTMLElement) => Promise<void>)
+  | ((e: HTMLElement) => void);
+
+export type StrategyStep = readonly [Query, Action];
+
+export type StrategyFn = (
+  actions: ComponentDriverActions
+) => StrategyStep[] | [];
+
+export type PropsFn = () => PropsWithChildren<any>;
 
 interface TestSuite {
   given: (description: string, props: PropsFn) => void;

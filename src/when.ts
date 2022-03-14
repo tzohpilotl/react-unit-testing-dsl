@@ -19,11 +19,10 @@ export async function whenExecute(
   result: RenderResult,
   getAlgorithm: StrategyFn
 ) {
-  const steps = getAlgorithm(userEvent);
-  await Promise.all(
-    steps.map(async ([find, execute]) => {
-      const node = await find(result);
-      await execute(node);
-    })
-  );
+  // This for loop is necessary because there would be an act() warning if we triggered
+  // all the DOM promises at once
+  for (const [find, execute] of getAlgorithm(userEvent)) {
+    const node = await find(result);
+    await execute(node);
+  }
 }

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { render } from "@testing-library/react";
-import { ComponentDriverActions, getInitialState } from "./index";
 import { whenExecute } from "./when";
 
 const Clickable = () => {
@@ -15,29 +14,42 @@ const Clickable = () => {
 
 describe("when", function () {
   it("executes all actions", async function () {
+    const renderResult = render(<Clickable />);
+    const querySpy = jest.fn();
+    const actionSpy = jest.fn();
     const actions = [
-      [jest.fn(), jest.fn()],
-      [jest.fn(), jest.fn()],
+      [
+        async () => {
+          querySpy();
+          return await renderResult.findByText("closed");
+        },
+        actionSpy,
+      ] as const,
+      [
+        async () => {
+          querySpy();
+          return await renderResult.findByText("closed");
+        },
+        actionSpy,
+      ] as const,
     ];
-    const getAlgorithm: (actions: ComponentDriverActions) => any[] | [] = () =>
-      actions;
-    await whenExecute(render(<Clickable />), getAlgorithm);
-    expect.assertions(actions.length * 2);
-    actions.forEach(([find, execute]) => {
-      expect(find).toHaveBeenCalledTimes(1);
-      expect(execute).toHaveBeenCalledTimes(1);
-    });
+    await expect(
+      whenExecute(renderResult, () => actions)
+    ).resolves.not.toThrow();
+    expect(querySpy).toHaveBeenCalledTimes(2);
+    expect(actionSpy).toHaveBeenCalledTimes(2);
   });
 
   it("correctly applies actions to the component", async function () {
     const renderResult = render(<Clickable />);
-    const getAlgorithm: (actions: ComponentDriverActions) => any[] | [] = ({
-      click,
-    }) => [[async ({ findByText }: any) => await findByText("click"), click]];
-    let node = await renderResult.findByText("closed", {}, { timeout: 10 });
-    expect(node).toBeDefined();
-    await whenExecute(renderResult, getAlgorithm);
-    node = await renderResult.findByText("open", {}, { timeout: 10 });
-    expect(node).toBeDefined();
+    await expect(
+      renderResult.findByText("closed", {}, { timeout: 10 })
+    ).resolves.toBeDefined();
+    await whenExecute(renderResult, ({ click }) => [
+      [async ({ findByText }) => await findByText("click"), click],
+    ]);
+    await expect(
+      renderResult.findByText("open", {}, { timeout: 10 })
+    ).resolves.toBeDefined();
   });
 });

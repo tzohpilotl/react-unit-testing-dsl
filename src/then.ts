@@ -18,6 +18,7 @@ export async function thenExecute(
   result: RenderResult,
   getExpectations: ExpectationsFn
 ) {
-  const expectations = getExpectations(result);
-  return await Promise.all(expectations.map((expect) => expect(result)));
+  for (const expectation of getExpectations(result)) {
+    await expectation(result);
+  }
 }

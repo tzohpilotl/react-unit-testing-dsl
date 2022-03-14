@@ -1,30 +1,43 @@
-* Example
-#+BEGIN_SRC javascript
-  const Clickable = ({ name }) => {
+* Example (actual integration test)
+#+BEGIN_SRC typescript :tangle src/integration.test.tsx
+  import React, { useState } from "react";
+  import myDescribe from "./index";
+
+  const Clickable = ({ name }: { name: string }) => {
     const [loggedIn, setLoggedIn] = useState(false);
     return (
-        <>
-        {open ? "Hello stranger..." : `Hello ${name}!`}
-        <button onClick={() => setOpen(!open)}>click</button>
+      <>
+        <p>{loggedIn ? `Hello ${name}!` : "Hello stranger"}</p>
+        <button onClick={() => setLoggedIn(!loggedIn)}>click</button>
         </>
     );
   };
 
-  describe(Clickable, function ({ given, when, then }) {
-    given("valid props", () => ({ name: "Mario" }));
-    when("the user clicks it once", ({ click }) => [
-      // The "when" function receives the functions from @testing-library/user-event
-      // These behavior specs receive the render result with all its queries
-      [async ({ findByText }: any) => await findByText("click"), click],
-      // Since this step is all about precondition we could check some elements exist before the main assertionss
-      [async ({findByText}: any) => await findByText(/stranger/), () => {
-        /* No behavior here since we just want to make sure the component says "closed" at the beginning */
-      }],
-    ]);
-    then("displays a text", ({ findByText }) => [
-      // The "then" function receives the render result with all its quries
-      async () => await findByText(/Mario/),
-    ]);
+  async function testAComponent() {
+    return await myDescribe(Clickable, function ({ given, when, then }) {
+      given("valid props", () => ({ name: "Mario" }));
+      when("the user clicks it once", ({ click }) => [
+        // The "when" function receives the functions from @testing-library/user-event
+        [
+          async ({ findByText }) => await findByText(/stranger/),
+          () => {
+            // No behavior here since we just want to make sure the component says "stranger" in the beginning
+          },
+        ],
+        // These behavior specs receive the render result with all its queries
+        [async ({ findByText }) => await findByText("click"), click],
+      ]);
+      then("displays a text", ({ findByText }) => [
+        // The "then" function receives the render result with all its quries
+        async () => await findByText(/Mario/, {}, { timeout: 10 }),
+      ]);
+    });
+  }
+
+  describe("integration", function () {
+    it("executes without errors", async function () {
+      await expect(testAComponent()).resolves.not.toThrow();
+    });
   });
 #+END_SRC
 
