@@ -1,11 +1,12 @@
 import userEvent from "@testing-library/user-event";
 import { ConfigurationError } from "./error";
-import type { TestState, ComponentDriverActions } from "./index";
+import type { RenderResult } from "@testing-library/react";
+import type { TestState, StrategyFn } from "./index";
 
 export function when(state: TestState) {
   return function whenStateClosure(
     description: string,
-    getAlgorithm: (actions: ComponentDriverActions) => any[]
+    getAlgorithm: StrategyFn
   ) {
     if (state.when.called) {
       throw ConfigurationError("when");
@@ -14,11 +15,14 @@ export function when(state: TestState) {
   };
 }
 
-export async function whenExecute(state: TestState) {
-  const steps = state.when.getAlgorithm(userEvent);
+export async function whenExecute(
+  result: RenderResult,
+  getAlgorithm: StrategyFn
+) {
+  const steps = getAlgorithm(userEvent);
   await Promise.all(
     steps.map(async ([find, execute]) => {
-      const node = await find(state.result);
+      const node = await find(result);
       await execute(node);
     })
   );

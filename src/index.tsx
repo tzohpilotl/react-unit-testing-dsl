@@ -2,50 +2,55 @@ import userEvent from "@testing-library/user-event";
 import { given, givenExecute } from "./given";
 import { when, whenExecute } from "./when";
 import { then, thenExecute } from "./then";
+import type { PropsWithChildren } from "react";
+import type { RenderResult } from "@testing-library/react";
 
 export type ComponentAssertions = any;
 
 export type ComponentDriverActions = typeof userEvent;
 
+export type Expectation =
+  | ((r: RenderResult) => Promise<void>)
+  | ((r: RenderResult) => void);
+
+export type ExpectationsFn = (assertions: ComponentAssertions) => Expectation[];
+
+export type StrategyFn = (actions: ComponentDriverActions) => any[] | [];
+
+export type PropsFn = () => PropsWithChildren<{}>;
+
 interface TestSuite {
-  given: (description: string, props: any) => void;
-  when: (
-    description: string,
-    getAlgorithm: (actions: ComponentDriverActions) => any[]
-  ) => void;
-  then: (
-    description: string,
-    getExpectations: (assertions: ComponentAssertions) => any[]
-  ) => void;
+  given: (description: string, props: PropsFn) => void;
+  when: (description: string, getAlgorithm: StrategyFn) => void;
+  then: (description: string, getExpectations: ExpectationsFn) => void;
 }
 
 export interface TestState {
-  result: any;
-  value: any;
   given: {
     called: boolean;
     description: string;
-    props: () => any;
+    props: PropsFn;
   };
   when: {
     called: boolean;
     description: string;
-    getAlgorithm: (actions: ComponentDriverActions) => any[] | [];
+    getAlgorithm: StrategyFn;
   };
   then: {
     called: boolean;
     description: string;
-    getExpectations: (assertions: ComponentAssertions) => any[];
+    getExpectations: ExpectationsFn;
   };
 }
 
-export const getInitialState = () => ({
-  result: null,
-  value: null,
-  given: { called: false, description: "", props: () => ({}) },
-  then: { called: false, description: "", getExpectations: () => [] },
-  when: { called: false, description: "", getAlgorithm: () => [] },
-} as TestState);
+export const getInitialState = () =>
+  ({
+    result: null,
+    value: null,
+    given: { called: false, description: "", props: () => ({}) },
+    then: { called: false, description: "", getExpectations: () => [] },
+    when: { called: false, description: "", getAlgorithm: () => [] },
+  } as TestState);
 
 async function describe(Component: any, spec: (t: TestSuite) => void) {
   const state: TestState = getInitialState();
@@ -54,9 +59,9 @@ async function describe(Component: any, spec: (t: TestSuite) => void) {
     when: when(state),
     then: then(state),
   });
-  await givenExecute(Component, state);
-  await whenExecute(state);
-  await thenExecute(state);
+  const result = await givenExecute(Component, state.given.props);
+  await whenExecute(result, state.when.getAlgorithm);
+  await thenExecute(result, state.then.getExpectations);
 }
 
 export default describe;

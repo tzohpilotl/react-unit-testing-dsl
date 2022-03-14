@@ -1,6 +1,6 @@
 import React from "react";
 import myDescribe from "./index";
-import { ConfigurationError, SuiteStep } from "./error";
+import { SuiteStep } from "./error";
 
 function DummyComponent() {
   return <p>Testing component</p>;

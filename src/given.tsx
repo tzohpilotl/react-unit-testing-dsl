@@ -1,10 +1,10 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { ConfigurationError } from "./error";
-import type { TestState } from "./index";
+import type { PropsFn, TestState } from "./index";
 
 export function given(state: TestState) {
-  return function givenStateClosure(description: string, props: any) {
+  return function givenStateClosure(description: string, props: PropsFn) {
     if (state.given.called) {
       throw ConfigurationError("given");
     }
@@ -12,7 +12,6 @@ export function given(state: TestState) {
   };
 }
 
-export async function givenExecute(Component: any, state: TestState) {
-  const props = state.given.props();
-  state.result = await render(<Component {...props} />);
+export async function givenExecute(Component: any, props: PropsFn) {
+  return render(<Component {...props()} />);
 }

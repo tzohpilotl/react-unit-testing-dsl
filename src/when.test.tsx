@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { render } from "@testing-library/react";
-import { getInitialState } from "./index";
+import { ComponentDriverActions, getInitialState } from "./index";
 import { whenExecute } from "./when";
 
 const Clickable = () => {
@@ -19,9 +19,9 @@ describe("when", function () {
       [jest.fn(), jest.fn()],
       [jest.fn(), jest.fn()],
     ];
-    const state = getInitialState();
-    state.when.getAlgorithm = () => actions;
-    await whenExecute(state);
+    const getAlgorithm: (actions: ComponentDriverActions) => any[] | [] = () =>
+      actions;
+    await whenExecute(render(<Clickable />), getAlgorithm);
     expect.assertions(actions.length * 2);
     actions.forEach(([find, execute]) => {
       expect(find).toHaveBeenCalledTimes(1);
@@ -30,15 +30,14 @@ describe("when", function () {
   });
 
   it("correctly applies actions to the component", async function () {
-    const state = getInitialState();
-    state.result = render(<Clickable />);
-    state.when.getAlgorithm = ({ click }) => [
-      [async ({ findByText }: any) => await findByText("click"), click],
-    ];
-    let node = await state.result.findByText("closed", {}, { timeout: 10 });
+    const renderResult = render(<Clickable />);
+    const getAlgorithm: (actions: ComponentDriverActions) => any[] | [] = ({
+      click,
+    }) => [[async ({ findByText }: any) => await findByText("click"), click]];
+    let node = await renderResult.findByText("closed", {}, { timeout: 10 });
     expect(node).toBeDefined();
-    await whenExecute(state);
-    node = await state.result.findByText("open", {}, { timeout: 10 });
+    await whenExecute(renderResult, getAlgorithm);
+    node = await renderResult.findByText("open", {}, { timeout: 10 });
     expect(node).toBeDefined();
   });
 });

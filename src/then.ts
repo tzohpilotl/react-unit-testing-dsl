@@ -1,10 +1,11 @@
+import { RenderResult } from "@testing-library/react";
 import { ConfigurationError } from "./error";
-import type { TestState, ComponentAssertions } from "./index";
+import type { TestState, ExpectationsFn } from "./index";
 
 export function then(state: TestState) {
   return function thenStateClosure(
     description: string,
-    getExpectations: (assertions: ComponentAssertions) => any[]
+    getExpectations: ExpectationsFn
   ) {
     if (state.then.called) {
       throw ConfigurationError("then");
@@ -13,9 +14,10 @@ export function then(state: TestState) {
   };
 }
 
-export async function thenExecute(state: TestState) {
-  const expectations = state.then.getExpectations(state.result);
-  const results = await Promise.all(
-    expectations.map((expect) => expect(state.result))
-  );
+export async function thenExecute(
+  result: RenderResult,
+  getExpectations: ExpectationsFn
+) {
+  const expectations = getExpectations(result);
+  return await Promise.all(expectations.map((expect) => expect(result)));
 }

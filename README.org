@@ -29,7 +29,7 @@
 #+END_SRC
 
 
-* TODO Tasks [8/12]
+* TODO Tasks [9/14]
 + [X] Add eslint config
 + [X] Make describe blocks declarative
 + [X] Write tests for the ~describe~ function
@@ -38,7 +38,9 @@
 + [X] Allow to trigger behavior for especific nodes in ~when~ function
 + [X] Allow to perform multiple behavior steps on especific nodes in ~when~ function
 + [X] Write tests for ~when~ function
-+ [ ] Write tests for ~given~ function
++ [X] Write tests for ~given~ function
 + [ ] Write tests for ~then~ function
 + [ ] Integrate into Jest
 + [ ] Integrate with React Testing Library assertions
++ [ ] Consider moving non-behavior preconditions from the ~when~ function to the ~given~ function
++ [ ] Make it possible to test stuff other than React components
