@@ -14,13 +14,16 @@
 #+END_SRC
 
 
-* TODO Tasks [5/9]
+* TODO Tasks [7/12]
 + [X] Add eslint config
 + [X] Make describe blocks declarative
 + [X] Write tests for the ~describe~ function
 + [X] Remove the need to call ~await~ inside ~description~ blocks
 + [X] Pass the whole ~userEvent~ API to the user
-+ [ ] Allow more complex behavior in ~when~ function
-+ [ ] Write tests for suite steps functions
++ [X] Allow to trigger behavior for especific nodes in ~when~ function
++ [ ] Allow to perform multiple behavior steps on especific nodes in ~when~ function
++ [X] Write tests for ~when~ function
++ [ ] Write tests for ~given~ function
++ [ ] Write tests for ~then~ function
 + [ ] Integrate into Jest
 + [ ] Integrate with React Testing Library assertions

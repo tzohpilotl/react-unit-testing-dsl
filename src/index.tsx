@@ -30,7 +30,7 @@ export interface TestState {
   when: {
     called: boolean;
     description: string;
-    getAlgorithm: (actions: ComponentDriverActions) => any[];
+    getAlgorithm: (actions: ComponentDriverActions) => any[] | [];
   };
   then: {
     called: boolean;
@@ -39,13 +39,13 @@ export interface TestState {
   };
 }
 
-const getInitialState = () => ({
+export const getInitialState = () => ({
   result: null,
   value: null,
   given: { called: false, description: "", props: () => ({}) },
   then: { called: false, description: "", getExpectations: () => [] },
   when: { called: false, description: "", getAlgorithm: () => [] },
-});
+} as TestState);
 
 async function describe(Component: any, spec: (t: TestSuite) => void) {
   const state: TestState = getInitialState();
