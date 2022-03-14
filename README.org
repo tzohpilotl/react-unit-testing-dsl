@@ -1,27 +1,42 @@
 * Example
 #+BEGIN_SRC javascript
-  describe(({ name } => <p>{`Hello ${name}!`}</p>), function ({ given, when, then }) {
-    given("empty props", () => ({ name: "Mario" }));
-    when("the user clicks it once", ({ click }) => {
-      // These are the events in the `userEvent` package
-      return [click];
-    });
+  const Clickable = ({ name }) => {
+    const [loggedIn, setLoggedIn] = useState(false);
+    return (
+        <>
+        {open ? "Hello stranger..." : `Hello ${name}!`}
+        <button onClick={() => setOpen(!open)}>click</button>
+        </>
+    );
+  };
+
+  describe(Clickable, function ({ given, when, then }) {
+    given("valid props", () => ({ name: "Mario" }));
+    when("the user clicks it once", ({ click }) => [
+      // The "when" function receives the functions from @testing-library/user-event
+      // These behavior specs receive the render result with all its queries
+      [async ({ findByText }: any) => await findByText("click"), click],
+      // Since this step is all about precondition we could check some elements exist before the main assertionss
+      [async ({findByText}: any) => await findByText(/stranger/), () => {
+        /* No behavior here since we just want to make sure the component says "closed" at the beginning */
+      }],
+    ]);
     then("displays a text", ({ findByText }) => [
-      // These are the queries found in React Testing Library
-      async () => await findByText("Hello Mario!"),
+      // The "then" function receives the render result with all its quries
+      async () => await findByText(/Mario/),
     ]);
   });
 #+END_SRC
 
 
-* TODO Tasks [7/12]
+* TODO Tasks [8/12]
 + [X] Add eslint config
 + [X] Make describe blocks declarative
 + [X] Write tests for the ~describe~ function
 + [X] Remove the need to call ~await~ inside ~description~ blocks
 + [X] Pass the whole ~userEvent~ API to the user
 + [X] Allow to trigger behavior for especific nodes in ~when~ function
-+ [ ] Allow to perform multiple behavior steps on especific nodes in ~when~ function
++ [X] Allow to perform multiple behavior steps on especific nodes in ~when~ function
 + [X] Write tests for ~when~ function
 + [ ] Write tests for ~given~ function
 + [ ] Write tests for ~then~ function
