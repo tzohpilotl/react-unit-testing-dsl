@@ -7,7 +7,7 @@ const Clickable = ({ name }: { name: string }) => {
     <>
       <p>{loggedIn ? `Hello ${name}!` : "Hello stranger"}</p>
       <button onClick={() => setLoggedIn(!loggedIn)}>click</button>
-      </>
+    </>
   );
 };
 
